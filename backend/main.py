@@ -61,16 +61,6 @@ def update_todo(todo_id: int, todo_update: TodoUpdate, db: Session = Depends(get
         raise HTTPException(status_code=404, detail="待办事项不存在")
     return db_todo
 
-@app.delete("/api/todos/{todo_id}", summary="删除待办事项")
-def delete_todo(todo_id: int, db: Session = Depends(get_db)):
-    """
-    根据ID删除单个待办事项
-    """
-    success = crud.delete_todo(db, todo_id)
-    if not success:
-        raise HTTPException(status_code=404, detail="待办事项不存在")
-    return {"message": "删除成功"}
-
 @app.delete("/api/todos/clear-completed", response_model=SuccessResponse, summary="清除所有已完成的待办事项")
 def clear_completed_todos(db: Session = Depends(get_db)):
     """
@@ -86,6 +76,16 @@ def clear_all_todos(db: Session = Depends(get_db)):
     """
     deleted_count = crud.clear_all_todos(db)
     return {"message": f"成功清除所有{deleted_count}个待办事项", "deleted_count": deleted_count}
+
+@app.delete("/api/todos/{todo_id}", summary="删除待办事项")
+def delete_todo(todo_id: int, db: Session = Depends(get_db)):
+    """
+    根据ID删除单个待办事项
+    """
+    success = crud.delete_todo(db, todo_id)
+    if not success:
+        raise HTTPException(status_code=404, detail="待办事项不存在")
+    return {"message": "删除成功"}
 
 # 根路由
 @app.get("/")
